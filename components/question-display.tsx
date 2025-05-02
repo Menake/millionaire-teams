@@ -1,5 +1,6 @@
 "use client"
 
+import { shuffleArray } from "@/lib/questions";
 import type { Question } from "@/lib/types"
 import { motion } from "framer-motion"
 

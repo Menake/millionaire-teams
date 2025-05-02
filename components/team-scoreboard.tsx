@@ -10,12 +10,12 @@ interface TeamScoreboardProps {
 
 export default function TeamScoreboard({ teams, currentTeamIndex, isStealingMode }: TeamScoreboardProps) {
   return (
-    <div className="flex gap-4">
+    <div className="flex flex-1 gap-4">
       {teams.map((team, index) => (
         <div
           key={index}
           className={`p-4 rounded-lg ${
-            currentTeamIndex === index ? "bg-blue-700 border-2 border-yellow-400" : "bg-blue-900"
+            currentTeamIndex === index ? "bg-yellow-700 border-2 border-yellow-400" : "bg-blue-900"
           }`}
         >
           <div className="font-bold text-lg">{team.name}</div>

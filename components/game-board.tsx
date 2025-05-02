@@ -6,6 +6,7 @@ import QuestionDisplay from "./question-display"
 import TeamScoreboard from "./team-scoreboard"
 import Lifelines from "./lifelines"
 import { Button } from "@/components/ui/button"
+import CountdownTimer from "./countdown-timer"
 
 interface GameBoardProps {
   gameState: GameState
@@ -137,21 +138,27 @@ export default function GameBoard({
 
   return (
     <div className="min-h-screen flex flex-col p-4">
-      <div className="flex justify-between mb-6">
+      <div className="flex flex-row items-center justify-between mb-6">
+        <div className="w-1/4">
         <TeamScoreboard
           teams={gameState.teams}
           currentTeamIndex={gameState.currentTeamIndex}
           isStealingMode={isStealingMode}
         />
+        </div>
 
-        <div className="text-right">
-          <div className="text-xl mb-2">Section {gameState.currentSection + 1} / 3</div>
-          <div className="text-lg">Question {gameState.currentQuestionIndex + 1} / 4</div>
+        <div className="flex flex-1  justify-center">
+          <CountdownTimer questionId={gameState.currentQuestionIndex} defaultTime={gameState.status === "stealing" ? 10 : 45} />
+        </div>
+
+        <div className="text-right w-1/4">
+          <div className="text-lg">Question {gameState.currentQuestionIndex + 1} / {gameState.questions.length}</div>
           <div className="text-2xl font-bold text-yellow-400 mt-2">
             {isStealingMode ? `${Math.floor(currentPoints / 2)} points (steal)` : `${currentPoints} points`}
           </div>
         </div>
       </div>
+
 
       <div className="flex-1 flex flex-col items-center justify-center">
         <Lifelines

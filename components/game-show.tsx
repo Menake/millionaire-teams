@@ -84,20 +84,33 @@ export default function GameShow() {
       })
     }
 
-    moveToNextQuestion(updatedTeams)
+
+    moveToNextQuestion(updatedTeams);
   }
 
   const moveToNextQuestion = (updatedTeams: Team[]) => {
     const nextQuestionIndex = gameState.currentQuestionIndex + 1
 
     // Check if we've completed all questions in the current section
-    if (gameState.currentQuestionIndex === 12) {
+    if (nextQuestionIndex === gameState.questions.length) {
       setGameState({
         ...gameState,
         status: "finished",
         teams: updatedTeams,
       });
     } else {
+      if (gameState.status === "stealing") {
+        setGameState({
+          ...gameState,
+          teams: updatedTeams,
+          status: "playing",
+          currentQuestionIndex: gameState.currentQuestionIndex + 1,
+          currentTeamIndex: gameState.currentTeamIndex
+        })
+        return;
+      }
+
+
       // Move to the next question in the current section
       setGameState({
         ...gameState,

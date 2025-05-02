@@ -275,7 +275,7 @@ const questions = [
 ]
 
 
-function shuffleArray(array: any[]) {
+export function shuffleArray(array: any[]) {
   for (let i = array.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [array[i], array[j]] = [array[j], array[i]];
@@ -284,12 +284,21 @@ function shuffleArray(array: any[]) {
 
 export function getRandomQuestions(array: any[]) {
   shuffleArray(array);
-  return array.slice(0, 12);
+  return array.slice(0, 2);
 }
 
 
 export function generateQuestions(): Question[] {
-  return getRandomQuestions(questions);
+  return getRandomQuestions(questions).map(q => {
+    const scrambled = [...q.answers];
+    shuffleArray(scrambled);
+
+    return {
+      ...q,
+      answers: scrambled
+    }
+  });
+
 }
 
 // Function to generate a new question of similar difficulty
