@@ -6,9 +6,8 @@ import "./globals.css"
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "Who Wants to Be a Millionaire: Team Edition",
-  description: "A team-based version of the classic game show",
-    generator: 'v0.dev'
+  title: "It's Trivial",
+  description: "A team-based trivia game",
 }
 
 export default function RootLayout({

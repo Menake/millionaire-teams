@@ -1,279 +1,86 @@
-import type { Section, Question } from "./types"
+import type { Question } from "./types"
+
+const similarQuestions = [
+  // Sri Lanka (9)
+  { id: 2091, question: "Which Sri Lankan mountain is sacred to multiple religions and known for the 'Sri Pada' footprint?", answers: ["Knuckles", "Hanthana", "Pidurutalagala", "Adam's Peak"], correctAnswer: "Adam's Peak" },
+  { id: 2092, question: "Which famous Sri Lankan beach town is known for stilt fishing?", answers: ["Mirissa", "Trincomalee", "Unawatuna", "Weligama"], correctAnswer: "Weligama" },
+  { id: 2093, question: "The 'Yala' national park is best known for its population of which animal?", answers: ["Elephants", "Leopards", "Sloth Bears", "Crocodiles"], correctAnswer: "Leopards" },
+  { id: 2094, question: "Which ancient Sri Lankan king is credited with building Sigiriya?", answers: ["Parakramabahu I", "Kashyapa I", "Vijayabahu I", "Dutugemunu"], correctAnswer: "Kashyapa I" },
+  { id: 2095, question: "Which popular pilgrimage destination is on an island in the Jaffna Peninsula?", answers: ["Nallur", "Nagadeepa", "Delft Island", "Kadurugoda"], correctAnswer: "Nagadeepa" },
+  { id: 2096, question: "What is the name of the tea-growing region often called 'Little England'?", answers: ["Ella", "Badulla", "Hatton", "Nuwara Eliya"], correctAnswer: "Nuwara Eliya" },
+  { id: 2097, question: "Which Sri Lankan leader was assassinated by a suicide bomber in 1993?", answers: ["J. R. Jayewardene", "Ranasinghe Premadasa", "S. W. R. D. Bandaranaike", "Gamini Dissanayake"], correctAnswer: "Ranasinghe Premadasa" },
+  { id: 2098, question: "What is the name of the annual Buddhist procession held in Kandy?", answers: ["Vesak", "Perahera", "Poson", "Esala Perahera"], correctAnswer: "Esala Perahera" },
+  { id: 2099, question: "What is the term for the traditional Sri Lankan drum used in Kandyan dance?", answers: ["Udukkai", "Geta Beraya", "Thammattama", "Mridangam"], correctAnswer: "Geta Beraya" },
+
+  // New Zealand (6)
+  { id: 2100, question: "Which New Zealand wine region is famous for Sauvignon Blanc?", answers: ["Hawke’s Bay", "Central Otago", "Marlborough", "Wairarapa"], correctAnswer: "Marlborough" },
+  { id: 2101, question: "Which New Zealand volcano erupted in 2019 causing multiple fatalities?", answers: ["Mount Ruapehu", "White Island", "Mount Ngauruhoe", "Mount Taranaki"], correctAnswer: "White Island" },
+  { id: 2102, question: "Which New Zealand city is nicknamed 'The Garden City'?", answers: ["Auckland", "Wellington", "Christchurch", "Dunedin"], correctAnswer: "Christchurch" },
+  { id: 2103, question: "Which New Zealander won the Nobel Prize in Chemistry in 1908?", answers: ["Alan MacDiarmid", "Ernest Rutherford", "Maurice Wilkins", "William Pickering"], correctAnswer: "Ernest Rutherford" },
+  { id: 2104, question: "The All Blacks perform which traditional war dance before matches?", answers: ["Māori Haka", "Poi", "Kapa Haka", "Kī-o-Rahi"], correctAnswer: "Māori Haka" },
+  { id: 2105, question: "Lake Taupō is situated in which island of New Zealand?", answers: ["South Island", "North Island", "Stewart Island", "Waiheke Island"], correctAnswer: "North Island" },
+
+  // General Knowledge (15)
+  { id: 2106, question: "What is the chemical symbol for gold?", answers: ["Au", "Ag", "Gd", "Go"], correctAnswer: "Au" },
+  { id: 2107, question: "Which planet has the most moons?", answers: ["Earth", "Jupiter", "Saturn", "Uranus"], correctAnswer: "Saturn" },
+  { id: 2108, question: "Which literary work is the origin of the phrase 'Big Brother is watching you'?", answers: ["Brave New World", "1984", "Animal Farm", "Fahrenheit 451"], correctAnswer: "1984" },
+  { id: 2109, question: "Which Greek god is associated with the sun?", answers: ["Zeus", "Apollo", "Ares", "Hermes"], correctAnswer: "Apollo" },
+  { id: 2110, question: "Which natural number has no Roman numeral?", answers: ["0", "1", "50", "100"], correctAnswer: "0" },
+  { id: 2111, question: "Which is the largest desert in the world?", answers: ["Sahara", "Gobi", "Antarctic", "Arabian"], correctAnswer: "Antarctic" },
+  { id: 2112, question: "Which philosopher wrote 'The Republic'?", answers: ["Socrates", "Aristotle", "Plato", "Descartes"], correctAnswer: "Plato" },
+  { id: 2113, question: "Which artist painted 'The School of Athens'?", answers: ["Raphael", "Michelangelo", "Da Vinci", "Botticelli"], correctAnswer: "Raphael" },
+  { id: 2114, question: "Which gas makes up most of the Earth’s atmosphere?", answers: ["Oxygen", "Nitrogen", "Carbon Dioxide", "Hydrogen"], correctAnswer: "Nitrogen" },
+  { id: 2115, question: "What is the term for animals that eat both plants and meat?", answers: ["Herbivores", "Carnivores", "Omnivores", "Insectivores"], correctAnswer: "Omnivores" },
+  { id: 2116, question: "Which African nation has the most pyramids?", answers: ["Egypt", "Sudan", "Ethiopia", "Libya"], correctAnswer: "Sudan" },
+  { id: 2117, question: "Which European city is home to the famous 'Blue Mosque'?", answers: ["Istanbul", "Athens", "Rome", "Barcelona"], correctAnswer: "Istanbul" },
+  { id: 2118, question: "How many strings does a standard violin have?", answers: ["4", "5", "6", "7"], correctAnswer: "4" },
+  { id: 2119, question: "What is the capital of Kazakhstan?", answers: ["Astana", "Almaty", "Tashkent", "Bishkek"], correctAnswer: "Astana" },
+  { id: 2120, question: "Which element is a liquid at room temperature?", answers: ["Mercury", "Bromine", "Gallium", "Radon"], correctAnswer: "Mercury" }
+];
 
 
 const questions = [
-  {
-    id: 301,
-    question: "Which actor voiced Bowser in 'The Super Mario Bros. Movie' (2023)?",
-    answers: ["Jack Black", "Seth Rogen", "Chris Pratt", "Jason Momoa"],
-    correctAnswer: "Jack Black",
-  },
-  {
-    id: 302,
-    question: "Which singer's 2023 album is titled 'Did You Know That There's a Tunnel Under Ocean Blvd'?",
-    answers: ["Lana Del Rey", "Billie Eilish", "Grimes", "FKA Twigs"],
-    correctAnswer: "Lana Del Rey",
-  },
-  {
-    id: 303,
-    question: "Which TV show holds the record for most Emmy wins of all time?",
-    answers: ["Game of Thrones", "Saturday Night Live", "Breaking Bad", "The Simpsons"],
-    correctAnswer: "Saturday Night Live",
-  },
-  {
-    id: 304,
-    question: "Who played Elvis Presley in the 2022 biopic 'Elvis'?",
-    answers: ["Austin Butler", "Miles Teller", "Ansel Elgort", "Timothée Chalamet"],
-    correctAnswer: "Austin Butler",
-  },
-  {
-    id: 305,
-    question: "Which K-pop girl group released the 2022 hit 'Pink Venom'?",
-    answers: ["BLACKPINK", "TWICE", "NewJeans", "Red Velvet"],
-    correctAnswer: "BLACKPINK",
-  },
-  {
-    id: 306,
-    question: "What is the real name of rapper Doja Cat?",
-    answers: ["Amala Dlamini", "Dana Owens", "Belcalis Almanzar", "Melissa Jefferson"],
-    correctAnswer: "Amala Dlamini",
-  },
-  {
-    id: 307,
-    question: "Which film won the Golden Lion at the Venice Film Festival in 2023?",
-    answers: ["Poor Things", "The Whale", "The Zone of Interest", "Anatomy of a Fall"],
-    correctAnswer: "Poor Things",
-  },
-  {
-    id: 308,
-    question: "Which country won the 2023 Rugby World Cup?",
-    answers: ["South Africa", "New Zealand", "France", "Ireland"],
-    correctAnswer: "South Africa",
-  },
-  {
-    id: 309,
-    question: "Who was the first woman to score in a Formula 1 Grand Prix?",
-    answers: ["Lella Lombardi", "Susie Wolff", "Maria Teresa de Filippis", "Danica Patrick"],
-    correctAnswer: "Lella Lombardi",
-  },
-  {
-    id: 310,
-    question: "Which tennis Grand Slam is played on clay courts?",
-    answers: ["Australian Open", "Wimbledon", "US Open", "French Open"],
-    correctAnswer: "French Open",
-  },
-  {
-    id: 311,
-    question: "Who holds the record for the most goals scored in a single FIFA World Cup tournament?",
-    answers: ["Just Fontaine", "Miroslav Klose", "Ronaldo", "Kylian Mbappé"],
-    correctAnswer: "Just Fontaine",
-  },
-  {
-    id: 312,
-    question: "Which country hosted the first ever Olympic Games?",
-    answers: ["Greece", "France", "United Kingdom", "Germany"],
-    correctAnswer: "Greece",
-  },
-  {
-    id: 313,
-    question: "Which cricket team won the inaugural ICC World Test Championship in 2021?",
-    answers: ["India", "Australia", "England", "New Zealand"],
-    correctAnswer: "New Zealand",
-  },
-  {
-    id: 314,
-    question: "Who won the 2023 Tour de France Femmes?",
-    answers: ["Annemiek van Vleuten", "Demi Vollering", "Elisa Longo Borghini", "Marianne Vos"],
-    correctAnswer: "Demi Vollering",
-  },
-  {
-    id: 315,
-    question: "Which country is home to the highest number of active volcanoes?",
-    answers: ["Indonesia", "Japan", "Iceland", "Italy"],
-    correctAnswer: "Indonesia",
-  },
-  {
-    id: 316,
-    question: "What is the capital of Eritrea?",
-    answers: ["Asmara", "Kampala", "Addis Ababa", "Khartoum"],
-    correctAnswer: "Asmara",
-  },
-  {
-    id: 317,
-    question: "Which is the longest river entirely in Europe?",
-    answers: ["Volga", "Danube", "Rhine", "Dniester"],
-    correctAnswer: "Volga",
-  },
-  {
-    id: 318,
-    question: "What is the official language of Bhutan?",
-    answers: ["Dzongkha", "Nepali", "Hindi", "Tibetan"],
-    correctAnswer: "Dzongkha",
-  },
-  {
-    id: 319,
-    question: "Mount Vinson is the highest peak on which continent?",
-    answers: ["Antarctica", "Australia", "South America", "Asia"],
-    correctAnswer: "Antarctica",
-  },
-  {
-    id: 320,
-    question: "Which African country is the world’s largest producer of cocoa?",
-    answers: ["Ivory Coast", "Ghana", "Nigeria", "Cameroon"],
-    correctAnswer: "Ivory Coast",
-  },
-  {
-    id: 321,
-    question: "What is the name of the desert that spans much of southern Mongolia and northern China?",
-    answers: ["Gobi", "Taklamakan", "Karakum", "Thar"],
-    correctAnswer: "Gobi",
-  },
-  {
-    id: 322,
-    question: "Which element has the highest melting point?",
-    answers: ["Tungsten", "Carbon", "Iron", "Platinum"],
-    correctAnswer: "Tungsten",
-  },
-  {
-    id: 323,
-    question: "Which British author created the 'Discworld' series?",
-    answers: ["Terry Pratchett", "Douglas Adams", "J.K. Rowling", "Neil Gaiman"],
-    correctAnswer: "Terry Pratchett",
-  },
-  {
-    id: 324,
-    question: "Which philosopher wrote 'Being and Time'?",
-    answers: ["Martin Heidegger", "Friedrich Nietzsche", "Immanuel Kant", "Jean-Paul Sartre"],
-    correctAnswer: "Martin Heidegger",
-  },
-  {
-    id: 325,
-    question: "What is the term for a word that is its own antonym?",
-    answers: ["Contronym", "Palindrome", "Anagram", "Homonym"],
-    correctAnswer: "Contronym",
-  },
-  {
-    id: 326,
-    question: "What was the first synthetic plastic ever created?",
-    answers: ["Bakelite", "Nylon", "PVC", "Celluloid"],
-    correctAnswer: "Bakelite",
-  },
-  {
-    id: 327,
-    question: "Which metal is liquid at room temperature?",
-    answers: ["Mercury", "Gallium", "Cesium", "All of the above"],
-    correctAnswer: "All of the above",
-  },
-  {
-    id: 328,
-    question: "Which ancient civilization built Machu Picchu?",
-    answers: ["Inca", "Aztec", "Maya", "Olmec"],
-    correctAnswer: "Inca",
-  },
-  {
-    id: 329,
-    question: "What is the name of the protein that carries oxygen in the blood?",
-    answers: ["Hemoglobin", "Myosin", "Insulin", "Keratin"],
-    correctAnswer: "Hemoglobin",
-  },
-  {
-    id: 330,
-    question: "In computing, what does GPU stand for?",
-    answers: ["Graphics Processing Unit", "General Processing Unit", "Graphical Protocol Utility", "Grid Processing Unit"],
-    correctAnswer: "Graphics Processing Unit",
-  },
-  {
-    id: 331,
-    question: "Which ocean has the deepest point on Earth?",
-    answers: ["Pacific", "Atlantic", "Indian", "Southern"],
-    correctAnswer: "Pacific",
-  },
-  {
-    id: 332,
-    question: "What is the name of the world's first cloned mammal?",
-    answers: ["Dolly", "Polly", "Molly", "Bessie"],
-    correctAnswer: "Dolly",
-  },
-  {
-    id: 333,
-    question: "In what year did the Berlin Wall fall?",
-    answers: ["1989", "1991", "1987", "1993"],
-    correctAnswer: "1989",
-  },
-  {
-    id: 334,
-    question: "Which mathematician is considered the 'father of computer science'?",
-    answers: ["Alan Turing", "John von Neumann", "Charles Babbage", "Isaac Newton"],
-    correctAnswer: "Alan Turing",
-  },
-  {
-    id: 335,
-    question: "Which gas makes up about 78% of Earth's atmosphere?",
-    answers: ["Nitrogen", "Oxygen", "Carbon Dioxide", "Argon"],
-    correctAnswer: "Nitrogen",
-  },
-  {
-    id: 336,
-    question: "Which artist painted 'The Persistence of Memory'?",
-    answers: ["Salvador Dalí", "Pablo Picasso", "Joan Miró", "René Magritte"],
-    correctAnswer: "Salvador Dalí",
-  },
-  {
-    id: 337,
-    question: "Which constellation contains the star Betelgeuse?",
-    answers: ["Orion", "Cassiopeia", "Leo", "Ursa Major"],
-    correctAnswer: "Orion",
-  },
-  {
-    id: 338,
-    question: "What is the rarest blood type?",
-    answers: ["AB negative", "O negative", "A positive", "B positive"],
-    correctAnswer: "AB negative",
-  },
-  {
-    id: 339,
-    question: "Which planet has the most moons?",
-    answers: ["Saturn", "Jupiter", "Uranus", "Neptune"],
-    correctAnswer: "Saturn",
-  },
-  {
-    id: 340,
-    question: "What is the mathematical term for a six-sided polygon?",
-    answers: ["Hexagon", "Heptagon", "Pentagon", "Octagon"],
-    correctAnswer: "Hexagon",
-  },
-  {
-    id: 341,
-    question: "What is the term for animals that are active during twilight?",
-    answers: ["Crepuscular", "Nocturnal", "Diurnal", "Matutinal"],
-    correctAnswer: "Crepuscular",
-  },
-  {
-    id: 342,
-    question: "Which country invented paper?",
-    answers: ["China", "Egypt", "India", "Greece"],
-    correctAnswer: "China",
-  },
-  {
-    id: 343,
-    question: "What is the SI unit of electrical resistance?",
-    answers: ["Ohm", "Ampere", "Volt", "Watt"],
-    correctAnswer: "Ohm",
-  },
-  {
-    id: 344,
-    question: "Which classical composer became deaf later in life?",
-    answers: ["Ludwig van Beethoven", "Wolfgang Amadeus Mozart", "Johann Sebastian Bach", "Franz Schubert"],
-    correctAnswer: "Ludwig van Beethoven",
-  },
-  {
-    id: 345,
-    question: "What is the largest internal organ in the human body?",
-    answers: ["Liver", "Brain", "Lungs", "Heart"],
-    correctAnswer: "Liver",
-  }
-]
+  // Sri Lanka (9)
+  { id: 2061, question: "Which ancient Sri Lankan city was the capital during King Dutugemunu's reign?", answers: ["Polonnaruwa", "Anuradhapura", "Kandy", "Kurunegala"], correctAnswer: "Anuradhapura" },
+  { id: 2062, question: "Which Sri Lankan lake is man-made and located in Colombo?", answers: ["Beira Lake", "Kandy Lake", "Gregory Lake", "Parakrama Samudra"], correctAnswer: "Beira Lake" },
+  { id: 2063, question: "The 'Mahavamsa' chronicles the history of which country?", answers: ["India", "Nepal", "Sri Lanka", "Bhutan"], correctAnswer: "Sri Lanka" },
+  { id: 2064, question: "Which ethnic group forms the majority in Sri Lanka?", answers: ["Tamils", "Sinhalese", "Moors", "Burghers"], correctAnswer: "Sinhalese" },
+  { id: 2065, question: "Which city is known as the cultural capital of Sri Lanka?", answers: ["Jaffna", "Kandy", "Colombo", "Galle"], correctAnswer: "Kandy" },
+  { id: 2066, question: "Which major river flows through the Mahaweli Development Scheme?", answers: ["Kelani", "Mahaweli", "Kalu", "Walawe"], correctAnswer: "Mahaweli" },
+  { id: 2067, question: "Which fort in southern Sri Lanka is a UNESCO World Heritage Site?", answers: ["Jaffna Fort", "Galle Fort", "Trincomalee Fort", "Matara Fort"], correctAnswer: "Galle Fort" },
+  { id: 2068, question: "Which major Tamil festival is widely celebrated in Sri Lanka?", answers: ["Vesak", "Esala Perahera", "Thai Pongal", "Navam Perahera"], correctAnswer: "Thai Pongal" },
+  { id: 2069, question: "Who was the first executive president of Sri Lanka?", answers: ["Sirimavo Bandaranaike", "Chandrika Kumaratunga", "J. R. Jayewardene", "Ranasinghe Premadasa"], correctAnswer: "J. R. Jayewardene" },
 
+  // New Zealand (6)
+  { id: 2070, question: "What is the Māori name for New Zealand?", answers: ["Aotearoa", "Tāmaki Makaurau", "Te Ika-a-Māui", "Ngāti Awa"], correctAnswer: "Aotearoa" },
+  { id: 2071, question: "Which national park in New Zealand features the Franz Josef Glacier?", answers: ["Fiordland", "Tongariro", "Westland Tai Poutini", "Aoraki/Mount Cook"], correctAnswer: "Westland Tai Poutini" },
+  { id: 2072, question: "Who was New Zealand's longest-serving Prime Minister?", answers: ["Robert Muldoon", "Helen Clark", "Richard Seddon", "Jacinda Ardern"], correctAnswer: "Richard Seddon" },
+  { id: 2073, question: "Which river is New Zealand's longest?", answers: ["Waikato", "Clutha", "Wanganui", "Rangitikei"], correctAnswer: "Waikato" },
+  { id: 2074, question: "The Treaty of Waitangi was signed in which year?", answers: ["1830", "1840", "1850", "1860"], correctAnswer: "1840" },
+  { id: 2075, question: "Which mountain is the highest in New Zealand?", answers: ["Mount Ruapehu", "Mount Taranaki", "Aoraki / Mount Cook", "Mount Tongariro"], correctAnswer: "Aoraki / Mount Cook" },
+
+  // General Knowledge (15)
+  { id: 2076, question: "Which gas is commonly used in fluorescent lights?", answers: ["Argon", "Neon", "Krypton", "Helium"], correctAnswer: "Neon" },
+  { id: 2077, question: "Which country is home to the ancient city of Petra?", answers: ["Jordan", "Egypt", "Syria", "Iraq"], correctAnswer: "Jordan" },
+  { id: 2078, question: "What is the world’s largest living structure?", answers: ["Amazon Rainforest", "Great Barrier Reef", "Siberian Taiga", "Baikal Lake"], correctAnswer: "Great Barrier Reef" },
+  { id: 2079, question: "Which famous scientist discovered penicillin?", answers: ["Alexander Fleming", "Louis Pasteur", "Marie Curie", "Edward Jenner"], correctAnswer: "Alexander Fleming" },
+  { id: 2080, question: "What is the only even prime number?", answers: ["0", "2", "4", "6"], correctAnswer: "2" },
+  { id: 2081, question: "Which novel begins with the line 'Call me Ishmael'?", answers: ["Moby Dick", "The Old Man and the Sea", "Treasure Island", "Heart of Darkness"], correctAnswer: "Moby Dick" },
+  { id: 2082, question: "Which country consumes the most chocolate per capita?", answers: ["Belgium", "Switzerland", "Germany", "USA"], correctAnswer: "Switzerland" },
+  { id: 2083, question: "Which mathematical constant is approximately equal to 2.718?", answers: ["Pi", "Euler's Number", "Phi", "Gamma"], correctAnswer: "Euler's Number" },
+  { id: 2084, question: "In which year did the Berlin Wall fall?", answers: ["1987", "1988", "1989", "1990"], correctAnswer: "1989" },
+  { id: 2085, question: "Which part of the human body produces insulin?", answers: ["Liver", "Pancreas", "Kidney", "Spleen"], correctAnswer: "Pancreas" },
+  { id: 2086, question: "Which Shakespeare character says 'All the world's a stage'?", answers: ["Macbeth", "Hamlet", "Jaques", "Prospero"], correctAnswer: "Jaques" },
+  { id: 2087, question: "Which ocean is the deepest?", answers: ["Atlantic", "Pacific", "Indian", "Southern"], correctAnswer: "Pacific" },
+  { id: 2088, question: "How many players are there in a standard volleyball team?", answers: ["5", "6", "7", "8"], correctAnswer: "6" },
+  { id: 2089, question: "Which instrument measures air pressure?", answers: ["Thermometer", "Barometer", "Hygrometer", "Anemometer"], correctAnswer: "Barometer" },
+  { id: 2090, question: "Which famous artist cut off part of his own ear?", answers: ["Van Gogh", "Picasso", "Dali", "Monet"], correctAnswer: "Van Gogh" }
+];
+
+
+
+
+let usedSimilarQuestions: number[] = [];
 
 export function shuffleArray(array: any[]) {
   for (let i = array.length - 1; i > 0; i--) {
@@ -284,11 +91,13 @@ export function shuffleArray(array: any[]) {
 
 export function getRandomQuestions(array: any[]) {
   shuffleArray(array);
-  return array.slice(0, 2);
+  return array.slice(0, 30);
 }
 
 
 export function generateQuestions(): Question[] {
+  usedSimilarQuestions = [];
+
   return getRandomQuestions(questions).map(q => {
     const scrambled = [...q.answers];
     shuffleArray(scrambled);
@@ -304,11 +113,12 @@ export function generateQuestions(): Question[] {
 // Function to generate a new question of similar difficulty
 export function generateSimilarQuestion(
   gameQuestions: Question[]): Question {
-  const currentIds = gameQuestions.map(question => question.id);
-  const alternativeQuestions = questions
-    .filter(question => currentIds.includes(question.id) === false);
+  const questionsToUse = similarQuestions.filter(question => usedSimilarQuestions.includes(question.id) === false)
 
-  shuffleArray(alternativeQuestions);
+  shuffleArray(questionsToUse);
+  const question = questionsToUse.slice(0, 1)[0];
 
-  return alternativeQuestions.slice(0, 1)[0];
+  usedSimilarQuestions.push(question.id);
+
+  return question;
 }

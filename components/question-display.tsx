@@ -1,10 +1,11 @@
 "use client"
 
 import { shuffleArray } from "@/lib/questions";
-import type { Question } from "@/lib/types"
+import type { Question, Team } from "@/lib/types"
 import { motion } from "framer-motion"
 
 interface QuestionDisplayProps {
+  currentTeam: Team;
   isStealingMode: boolean;
   question: Question
   selectedAnswer: string | null
@@ -22,37 +23,50 @@ export default function QuestionDisplay({
   onSelectAnswer,
   eliminatedAnswers,
   audienceResults,
+  currentTeam
 }: QuestionDisplayProps) {
   const getAnswerClassName = (answer: string, index: number) => {
-    let className = "p-4 rounded-lg mb-4 cursor-pointer transition-all duration-300 text-lg font-medium"
+    let className = "relative p-6 rounded-lg cursor-pointer transition-all duration-300 text-lg font-medium "
 
-    // Base styling
-    className += " border-2"
+    const darkClasses = [
+      "bg-blue-300", // A - blue
+      "bg-green-300", // B - green
+      "bg-purple-300", // C - purple
+      "bg-yellow-300", // D - orange
+    ]
 
+    // Base colors for each option (A, B, C, D)
+    const colorClasses = [
+      "bg-blue-200", // A - Light blue
+      "bg-green-200", // B - Light green
+      "bg-purple-200", // C - Light purple
+      "bg-yellow-200", // D - Light yellow/orange
+    ]
+
+    // If this answer is eliminated by 50:50
+    if (eliminatedAnswers.includes(index)) {
+      className += " bg-gray-300 border-gray-400 pointer-events-none opacity-50"
+    } else {
+      className += ` ${colorClasses[index]} hover:${darkClasses[index]}` 
+    }
+      
     // Selected state
     if (selectedAnswer === answer) {
-      className += " border-yellow-400 bg-blue-800"
-    } else {
-      className += " border-blue-700 bg-blue-900 hover:bg-blue-800"
+      className += ` ring-4 ring-purple-500 ${darkClasses[index]}`
     }
 
     // Show correct/incorrect when result is shown
     if (showResult && selectedAnswer === answer) {
       if (answer === question.correctAnswer) {
-        className += " border-green-500 bg-green-900"
+        className += " border-green-500 bg-green-100"
       } else {
-        className += " border-red-500 bg-red-900"
+        className += " border-red-500 bg-red-100"
       }
     }
 
     // Highlight correct answer when result is shown
     if (showResult && answer === question.correctAnswer && selectedAnswer !== answer && isStealingMode) {
-      className += " border-green-500 bg-green-900"
-    }
-
-    // If this answer is eliminated by 50:50
-    if (eliminatedAnswers.includes(index)) {
-      className += " bg-gray-600 pointer-events-none"
+      className += " border-green-500 bg-green-100"
     }
 
     return className
@@ -61,38 +75,60 @@ export default function QuestionDisplay({
   const answerLetters = ["A", "B", "C", "D"]
 
   return (
-    <div className="w-full max-w-3xl mx-auto">
-      <div className="bg-blue-900 p-6 rounded-lg mb-8">
-        <h2 className="text-2xl font-bold mb-4">{question.question}</h2>
-      </div>
+    <div className="w-full max-w-4xl mx-auto">
+      {/* Question Card */}
+      <div className="bg-white p-8 rounded-xl shadow-lg mb-8">
+        {/* Category and Question Number */}
+        <div className="flex items-center justify-between mb-6">
+          <div className="w-40 bg-purple-100 text-purple-700 px-3 py-1 text-center rounded-full text-sm font-medium">
+            Sonal's Baby Bash
+          </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {question.answers.map((answer, index) => (
-          <motion.div
-            key={index}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: index * 0.1 }}
-            onClick={() => !eliminatedAnswers.includes(index) && onSelectAnswer(answer)}
-            className={getAnswerClassName(answer, index)}
-          >
-            <div className="flex items-center">
-              <span className="inline-block w-8 h-8 rounded-full  text-center leading-8 mr-3">
-                {answerLetters[index]}
-              </span>
-              <span>{answer}</span>
+          <p className="text-3xl text-purple-700 font-medium">{currentTeam.name} {isStealingMode ? "stealing" : "answering"}</p>
+          <div className="w-40" />
+        </div>
 
-              {audienceResults.length > 0 && (
-                <div className="ml-auto">
-                  <div className="bg-blue-700 h-4 w-20 rounded-full overflow-hidden">
-                    <div className="bg-yellow-400 h-full" style={{ width: `${audienceResults[index]}%` }}></div>
-                  </div>
-                  <div className="text-xs text-center mt-1">{audienceResults[index]}%</div>
+        {/* Question Text */}
+        <h2 className="text-2xl font-bold text-gray-900 mb-8 leading-relaxed">
+          {question.question}
+        </h2>
+
+        {/* Answer Options Grid */}
+        <div className="grid grid-cols-2 gap-4">
+          {question.answers.map((answer, index) => (
+            <motion.div
+              key={index}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.1 }}
+              onClick={() => !eliminatedAnswers.includes(index) && onSelectAnswer(answer)}
+              className={getAnswerClassName(answer, index)}
+            >
+              <div className="flex items-center">
+                {/* Answer Letter Circle */}
+                <div className="w-8 h-8 rounded-full bg-white border-2 border-gray-300 flex items-center justify-center mr-4 font-bold text-gray-700">
+                  {answerLetters[index]}
                 </div>
-              )}
-            </div>
-          </motion.div>
-        ))}
+                
+                {/* Answer Text */}
+                <span className="text-gray-900 font-medium">{answer}</span>
+
+                {/* Audience Results (if available) */}
+                {audienceResults.length > 0 && (
+                  <div className="ml-auto">
+                    <div className="bg-white h-3 w-16 rounded-full overflow-hidden border border-gray-300">
+                      <div 
+                        className="h-full bg-purple-500 transition-all duration-500" 
+                        style={{ width: `${audienceResults[index]}%` }}
+                      ></div>
+                    </div>
+                    <div className="text-xs text-center mt-1 text-gray-600">{audienceResults[index]}%</div>
+                  </div>
+                )}
+              </div>
+            </motion.div>
+          ))}
+        </div>
       </div>
     </div>
   )

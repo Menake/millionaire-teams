@@ -4,6 +4,7 @@ import { useState } from "react"
 import type { Team } from "@/lib/types"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { Brain, Users, Play } from "lucide-react"
 
 interface TeamSetupProps {
   onStartGame: (teams: Team[]) => void
@@ -11,8 +12,8 @@ interface TeamSetupProps {
 
 export default function TeamSetup({ onStartGame }: TeamSetupProps) {
   const [teams, setTeams] = useState<Team[]>([
-    { name: "Team 1", score: 0 },
-    { name: "Team 2", score: 0 },
+    { name: "Team A", score: 0 },
+    { name: "Team B", score: 0 },
   ])
 
   const handleTeamNameChange = (index: number, name: string) => {
@@ -32,35 +33,48 @@ export default function TeamSetup({ onStartGame }: TeamSetupProps) {
   }
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen p-4">
-      <div className="w-full max-w-md">
+    <div className="flex flex-col items-center justify-center min-h-screen p-6">
+      <div className="w-full max-w-lg">
+        {/* Header */}
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold mb-2 text-yellow-400">Who Wants to Be a Millionaire</h1>
-          <h2 className="text-2xl font-semibold">Team Edition</h2>
+          <div className="flex items-center justify-center mb-4">
+            <Brain className="h-12 w-12 text-purple-600 mr-4" />
+            <h1 className="text-5xl font-bold text-gray-900">It's Trivial</h1>
+          </div>
         </div>
 
-        <div className="bg-blue-900 rounded-lg p-6 mb-8">
-          <h3 className="text-xl font-bold mb-4">Team Setup</h3>
+        {/* Team Setup Card */}
+        <div className="bg-white rounded-xl shadow-lg p-8 mb-8">
+          <div className="flex items-center mb-6">
+            <Users className="h-6 w-6 text-purple-600 mr-3" />
+            <h3 className="text-2xl font-bold text-gray-900">Team Setup</h3>
+          </div>
 
-          {teams.map((team, index) => (
-            <div key={index} className="mb-4">
-              <label className="block mb-2">Team {index + 1} Name:</label>
-              <Input
-                type="text"
-                value={team.name}
-                onChange={(e) => handleTeamNameChange(index, e.target.value)}
-                className="w-full bg-blue-800 border-blue-700 text-white"
-                placeholder={`Enter Team ${index + 1} name`}
-              />
-            </div>
-          ))}
+          <div className="space-y-6">
+            {teams.map((team, index) => (
+              <div key={index} className="space-y-2">
+                <label className="block text-sm font-medium text-gray-700">
+                  {index === 0 ? "Team A" : "Team B"} Name:
+                </label>
+                <Input
+                  type="text"
+                  value={team.name}
+                  onChange={(e) => handleTeamNameChange(index, e.target.value)}
+                  className="w-full border-gray-300 focus:border-purple-500 focus:ring-purple-500 text-gray-900"
+                  placeholder={`Enter ${index === 0 ? "Team A" : "Team B"} name`}
+                />
+              </div>
+            ))}
+          </div>
         </div>
 
+        {/* Start Game Button */}
         <div className="text-center">
           <Button
             onClick={handleStartGame}
-            className="px-8 py-6 bg-yellow-500 text-blue-900 font-bold text-xl rounded-full hover:bg-yellow-400 transition-colors"
+            className="px-8 py-4 bg-purple-500 hover:bg-purple-600 text-white font-bold text-xl rounded-lg transition-colors flex items-center mx-auto"
           >
+            <Play className="h-6 w-6 mr-3" />
             Start Game
           </Button>
         </div>

@@ -7,6 +7,7 @@ import TeamScoreboard from "./team-scoreboard"
 import Lifelines from "./lifelines"
 import { Button } from "@/components/ui/button"
 import CountdownTimer from "./countdown-timer"
+import { Brain, Trophy, Check } from "lucide-react"
 
 interface GameBoardProps {
   gameState: GameState
@@ -77,7 +78,7 @@ export default function GameBoard({
         }
       }
       setShowResult(false)
-    }, 3000)
+    }, 1000)
   }
 
   const handleFiftyFifty = useCallback(() => {
@@ -137,39 +138,57 @@ export default function GameBoard({
   }
 
   return (
-    <div className="min-h-screen flex flex-col p-4">
-      <div className="flex flex-row items-center justify-between mb-6">
-        <div className="w-1/4">
-        <TeamScoreboard
-          teams={gameState.teams}
-          currentTeamIndex={gameState.currentTeamIndex}
-          isStealingMode={isStealingMode}
-        />
+    <div className="min-h-screen bg-gray-100 flex flex-col p-6">
+      {/* Header */}
+      <div className="flex items-center justify-between mb-8">
+        {/* Left - Game Title */}
+        <div className="flex items-center">
+          <Brain className="h-8 w-8 text-purple-600 mr-3" />
+          <h1 className="text-2xl font-bold text-gray-900">It's Trivial</h1>
         </div>
 
-        <div className="flex flex-1  justify-center">
-          <CountdownTimer questionId={gameState.currentQuestionIndex} defaultTime={gameState.status === "stealing" ? 10 : 45} />
+        {/* Center - Timer */}
+        <div className="flex-1 flex justify-center">
+          <CountdownTimer questionId={gameState.currentQuestionIndex} defaultTime={gameState.status === "stealing" ? 10 : 30} />
         </div>
 
-        <div className="text-right w-1/4">
-          <div className="text-lg">Question {gameState.currentQuestionIndex + 1} / {gameState.questions.length}</div>
-          <div className="text-2xl font-bold text-yellow-400 mt-2">
-            {isStealingMode ? `${Math.floor(currentPoints / 2)} points (steal)` : `${currentPoints} points`}
+        {/* Right - Round Progress */}
+        <div className="text-right">
+          <div className="text-lg font-medium text-gray-900">Round {gameState.currentQuestionIndex + 1} of {gameState.questions.length}</div>
+          <div className="w-32 h-2 bg-gray-300 rounded-full mt-2 overflow-hidden">
+            <div 
+              className="h-full bg-gradient-to-r from-purple-500 to-blue-600 rounded-full transition-all duration-300"
+              style={{ width: `${((gameState.currentQuestionIndex + 1) / gameState.questions.length) * 100}%` }}
+            ></div>
           </div>
         </div>
       </div>
 
+      {/* Scoreboard */}
+      <div className="flex justify-between mb-8">
+        {/* Team A */}
+        <div className="text-left">
+          <div className="text-lg font-medium text-gray-900 mb-2">Team A</div>
+          <div className="flex items-center">
+            <Trophy className="h-6 w-6 text-yellow-500 mr-2" />
+            <span className="text-3xl font-bold text-gray-900">{gameState.teams[0]?.score || 240}</span>
+          </div>
+        </div>
 
-      <div className="flex-1 flex flex-col items-center justify-center">
-        <Lifelines
-          isStealingMode={isStealingMode}
-          usedLifelines={gameState.usedLifelines[teamKey]}
-          onFiftyFifty={handleFiftyFifty}
-          onAskAudience={handleAskAudience}
-          onSwapQuestion={handleSwapQuestion}
-        />
+        {/* Team B */}
+        <div className="text-right">
+          <div className="text-lg font-medium text-gray-900 mb-2">Team B</div>
+          <div className="flex items-center justify-end">
+            <span className="text-3xl font-bold text-gray-900">{gameState.teams[1]?.score || 180}</span>
+            <Trophy className="h-6 w-6 text-yellow-500 ml-2" />
+          </div>
+        </div>
+      </div>
 
+      {/* Main Content */}
+      <div className="flex-1 flex flex-col">
         <QuestionDisplay
+          currentTeam={currentTeam}
           isStealingMode={isStealingMode}
           question={currentQuestion}
           selectedAnswer={selectedAnswer}
@@ -179,19 +198,27 @@ export default function GameBoard({
           audienceResults={audienceResults}
         />
 
-        <div className="mt-8">
+        {/* Bottom Section */}
+        <div className="flex justify-between gap-96 items-end mt-8 mx-auto max-w-4xl">
+          {/* Lifelines */}
+          <Lifelines
+            isStealingMode={isStealingMode}
+            usedLifelines={gameState.usedLifelines[teamKey]}
+            onFiftyFifty={handleFiftyFifty}
+            onAskAudience={handleAskAudience}
+            onSwapQuestion={handleSwapQuestion}
+          />
+
+          {/* Lock Answer Button */}
           <Button
             onClick={handleSubmitAnswer}
             disabled={!selectedAnswer || showResult}
-            className="px-8 py-4 bg-yellow-500 text-blue-900 font-bold text-xl rounded-full hover:bg-yellow-400 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-6 py-3 bg-purple-500 hover:bg-purple-600 text-white font-medium rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
           >
-            Final Answer
+            <Check className="h-5 w-5 mr-2" />
+            Lock Answer
           </Button>
         </div>
-
-        {isStealingMode && (
-          <div className="mt-4 text-xl text-yellow-400">{currentTeam.name} has a chance to steal!</div>
-        )}
       </div>
     </div>
   )
