@@ -1,8 +1,14 @@
 "use client"
 
-import { shuffleArray } from "@/lib/questions";
 import type { Question, Team } from "@/lib/types"
 import { motion } from "framer-motion"
+import { CheckCircle, X } from "lucide-react"
+
+const DIFFICULTY_STYLES = {
+  easy: "bg-green-100 text-green-700",
+  medium: "bg-amber-100 text-amber-700",
+  hard: "bg-rose-100 text-rose-700",
+} as const
 
 interface QuestionDisplayProps {
   currentTeam: Team;
@@ -10,6 +16,7 @@ interface QuestionDisplayProps {
   question: Question
   selectedAnswer: string | null
   showResult: boolean
+  showCorrectAnswer?: boolean
   onSelectAnswer: (answer: string) => void
   eliminatedAnswers: number[]
   audienceResults: number[]
@@ -20,13 +27,14 @@ export default function QuestionDisplay({
   question,
   selectedAnswer,
   showResult,
+  showCorrectAnswer = false,
   onSelectAnswer,
   eliminatedAnswers,
   audienceResults,
   currentTeam
 }: QuestionDisplayProps) {
   const getAnswerClassName = (answer: string, index: number) => {
-    let className = "relative p-6 rounded-lg cursor-pointer transition-all duration-300 text-lg font-medium "
+    let className = "relative p-6 rounded-lg cursor-pointer transition-all duration-300 text-lg font-medium border-2"
 
     const darkClasses = [
       "bg-blue-300", // A - blue
@@ -37,10 +45,10 @@ export default function QuestionDisplay({
 
     // Base colors for each option (A, B, C, D)
     const colorClasses = [
-      "bg-blue-200", // A - Light blue
-      "bg-green-200", // B - Light green
-      "bg-purple-200", // C - Light purple
-      "bg-yellow-200", // D - Light yellow/orange
+      "bg-blue-200 border-blue-300", // A - Light blue
+      "bg-green-200 border-green-300", // B - Light green
+      "bg-purple-200 border-purple-300", // C - Light purple
+      "bg-yellow-200 border-yellow-300", // D - Light yellow/orange
     ]
 
     // If this answer is eliminated by 50:50
@@ -50,38 +58,59 @@ export default function QuestionDisplay({
       className += ` ${colorClasses[index]} hover:${darkClasses[index]}` 
     }
       
-    // Selected state
-    if (selectedAnswer === answer) {
+    // Selected state (when not showing result)
+    if (selectedAnswer === answer && !showResult) {
       className += ` ring-4 ring-purple-500 ${darkClasses[index]}`
     }
 
     // Show correct/incorrect when result is shown
     if (showResult && selectedAnswer === answer) {
       if (answer === question.correctAnswer) {
-        className += " border-green-500 bg-green-100"
+        className += " border-green-600 bg-green-100 ring-4 ring-green-500"
       } else {
-        className += " border-red-500 bg-red-100"
+        className += " border-red-600 bg-red-100 ring-4 ring-red-500"
       }
     }
 
-    // Highlight correct answer when result is shown
-    if (showResult && answer === question.correctAnswer && selectedAnswer !== answer && isStealingMode) {
-      className += " border-green-500 bg-green-100"
+    // Highlight correct answer when result is shown (for stealing mode or when showing correct answer)
+    if (showResult && answer === question.correctAnswer && selectedAnswer !== answer && (isStealingMode || showCorrectAnswer)) {
+      className += " border-green-600 bg-green-100 ring-4 ring-green-500"
     }
 
     return className
   }
 
+  const getAnswerIcon = (answer: string, index: number) => {
+    if (!showResult) return null
+
+    // Show checkmark for correct answer
+    if (answer === question.correctAnswer && showCorrectAnswer) {
+      return <CheckCircle className="h-6 w-6 text-green-600 ml-auto" />
+    }
+
+    // Show X for selected wrong answer
+    if (selectedAnswer === answer && answer !== question.correctAnswer) {
+      return <X className="h-6 w-6 text-red-600 ml-auto" />
+    }
+
+    return null
+  }
+
   const answerLetters = ["A", "B", "C", "D"]
 
   return (
-    <div className="w-full max-w-4xl mx-auto">
+    <div className="w-2/3 mx-auto">
       {/* Question Card */}
       <div className="bg-white p-8 rounded-xl shadow-lg mb-8">
         {/* Category and Question Number */}
         <div className="flex items-center justify-between mb-6">
-          <div className="w-40 bg-purple-100 text-purple-700 px-3 py-1 text-center rounded-full text-sm font-medium">
-            Sonal's Baby Bash
+          <div className="w-40 flex items-center gap-2">
+            <span className="bg-purple-100 text-purple-700 px-3 py-1 rounded-full text-sm font-medium truncate">
+              {question.category}
+            </span>
+            <span className={`px-2 py-1 rounded-full text-xs font-semibold capitalize ${DIFFICULTY_STYLES[question.difficulty]}`}>
+              {question.difficulty}
+            </span>
           </div>
 
           <p className="text-3xl text-purple-700 font-medium">{currentTeam.name} {isStealingMode ? "stealing" : "answering"}</p>
@@ -113,8 +142,11 @@ export default function QuestionDisplay({
                 {/* Answer Text */}
                 <span className="text-gray-900 font-medium">{answer}</span>
 
+                {/* Result Icon */}
+                {getAnswerIcon(answer, index)}
+
                 {/* Audience Results (if available) */}
-                {audienceResults.length > 0 && (
+                {audienceResults.length > 0 && !showResult && (
                   <div className="ml-auto">
                     <div className="bg-white h-3 w-16 rounded-full overflow-hidden border border-gray-300">
                       <div 
@@ -129,6 +161,8 @@ export default function QuestionDisplay({
             </motion.div>
           ))}
         </div>
+
+
       </div>
     </div>
   )

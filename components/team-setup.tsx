@@ -72,7 +72,7 @@ export default function TeamSetup({ onStartGame }: TeamSetupProps) {
         <div className="text-center">
           <Button
             onClick={handleStartGame}
-            className="px-8 py-4 bg-purple-500 hover:bg-purple-600 text-white font-bold text-xl rounded-lg transition-colors flex items-center mx-auto"
+            className="w-full px-8 py-6 bg-purple-500 hover:bg-purple-600 text-white font-bold text-xl rounded-lg transition-colors flex items-center mx-auto"
           >
             <Play className="h-6 w-6 mr-3" />
             Start Game

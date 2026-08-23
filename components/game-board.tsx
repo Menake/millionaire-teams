@@ -28,6 +28,7 @@ export default function GameBoard({
 }: GameBoardProps) {
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null)
   const [showResult, setShowResult] = useState(false)
+  const [showCorrectAnswer, setShowCorrectAnswer] = useState(false)
   const [eliminatedAnswers, setEliminatedAnswers] = useState<number[]>([])
   const [audienceResults, setAudienceResults] = useState<number[]>([])
   const [lifelineToUse, setLifelineToUse] = useState<"fiftyFifty" | "askAudience" | "swapQuestion" | null>(null)
@@ -42,6 +43,7 @@ export default function GameBoard({
     // Reset state when question changes
     setSelectedAnswer(null)
     setShowResult(false)
+    setShowCorrectAnswer(false)
     setEliminatedAnswers([])
     setAudienceResults([])
     setLifelineToUse(null) // Reset lifeline trigger
@@ -66,6 +68,22 @@ export default function GameBoard({
     const isCorrect = selectedAnswer === currentQuestion?.correctAnswer
     setShowResult(true)
 
+    // Determine how long to show the result
+    let resultDisplayTime = 3000 // Default 3 seconds
+
+    if (isStealingMode && !isCorrect) {
+      // If stealing team gets it wrong, show correct answer for longer
+      setShowCorrectAnswer(true)
+      resultDisplayTime = 4000 // 4 seconds to show correct answer
+    } else if (!isStealingMode && !isCorrect) {
+      // If first team gets it wrong, show their wrong answer for 3 seconds
+      resultDisplayTime = 3000
+    } else if (isCorrect) {
+      // If correct, show for 2 seconds
+      setShowCorrectAnswer(true);
+      resultDisplayTime = 2000
+    }
+
     // Use setTimeout to show the result before moving to the next question
     setTimeout(() => {
       if (isStealingMode) {
@@ -78,7 +96,8 @@ export default function GameBoard({
         }
       }
       setShowResult(false)
-    }, 1000)
+      setShowCorrectAnswer(false)
+    }, resultDisplayTime)
   }
 
   const handleFiftyFifty = useCallback(() => {
@@ -149,7 +168,11 @@ export default function GameBoard({
 
         {/* Center - Timer */}
         <div className="flex-1 flex justify-center">
-          <CountdownTimer questionId={gameState.currentQuestionIndex} defaultTime={gameState.status === "stealing" ? 10 : 30} />
+          <CountdownTimer 
+            questionId={gameState.currentQuestionIndex} 
+            defaultTime={gameState.status === "stealing" ? 10 : 30} 
+            isPaused={showResult}
+          />
         </div>
 
         {/* Right - Round Progress */}
@@ -171,7 +194,7 @@ export default function GameBoard({
           <div className="text-lg font-medium text-gray-900 mb-2">Team A</div>
           <div className="flex items-center">
             <Trophy className="h-6 w-6 text-yellow-500 mr-2" />
-            <span className="text-3xl font-bold text-gray-900">{gameState.teams[0]?.score || 240}</span>
+            <span className="text-3xl font-bold text-gray-900">{gameState.teams[0]?.score || 0}</span>
           </div>
         </div>
 
@@ -179,7 +202,7 @@ export default function GameBoard({
         <div className="text-right">
           <div className="text-lg font-medium text-gray-900 mb-2">Team B</div>
           <div className="flex items-center justify-end">
-            <span className="text-3xl font-bold text-gray-900">{gameState.teams[1]?.score || 180}</span>
+            <span className="text-3xl font-bold text-gray-900">{gameState.teams[1]?.score || 0}</span>
             <Trophy className="h-6 w-6 text-yellow-500 ml-2" />
           </div>
         </div>
@@ -193,13 +216,14 @@ export default function GameBoard({
           question={currentQuestion}
           selectedAnswer={selectedAnswer}
           showResult={showResult}
+          showCorrectAnswer={showCorrectAnswer}
           onSelectAnswer={handleAnswerSelect}
           eliminatedAnswers={eliminatedAnswers}
           audienceResults={audienceResults}
         />
 
         {/* Bottom Section */}
-        <div className="flex justify-between gap-96 items-end mt-8 mx-auto max-w-4xl">
+        <div className="flex justify-between items-center w-2/3 mx-auto">
           {/* Lifelines */}
           <Lifelines
             isStealingMode={isStealingMode}
@@ -213,7 +237,7 @@ export default function GameBoard({
           <Button
             onClick={handleSubmitAnswer}
             disabled={!selectedAnswer || showResult}
-            className="px-6 py-3 bg-purple-500 hover:bg-purple-600 text-white font-medium rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
+            className="px-6 py-6 bg-purple-500 hover:bg-purple-600 text-white font-medium rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
           >
             <Check className="h-5 w-5 mr-2" />
             Lock Answer

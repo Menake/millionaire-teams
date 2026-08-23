@@ -25,3 +25,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+# question database (build product of: bun run db:seed)
+questions.db
+questions.db-journal

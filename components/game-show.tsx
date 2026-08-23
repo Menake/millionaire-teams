@@ -2,9 +2,10 @@
 
 import { useState } from "react"
 import TeamSetup from "./team-setup"
+import CategorySelect from "./category-select"
 import GameBoard from "./game-board"
 import type { GameState, Team } from "@/lib/types"
-import { generateQuestions, generateSimilarQuestion } from "@/lib/questions"
+import { getQuizQuestions } from "@/app/actions"
 import { Brain, Trophy, Play } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
@@ -12,6 +13,7 @@ export default function GameShow() {
   const [gameState, setGameState] = useState<GameState>({
     status: "setup",
     teams: [],
+    selectedCategoryIds: [],
     currentTeamIndex: 0,
     currentSection: 0,
     currentQuestionIndex: 0,
@@ -30,15 +32,35 @@ export default function GameShow() {
     },
   })
 
-  const startGame = (teams: Team[]) => {
-    const questions = generateQuestions();
+  const [isStarting, setIsStarting] = useState(false)
 
+  const startGame = (teams: Team[]) => {
     setGameState({
       ...gameState,
-      status: "playing",
+      status: "category-select",
       teams,
-      questions,
     })
+  }
+
+  const startQuiz = async (categoryIds: string[]) => {
+    setIsStarting(true)
+    try {
+      const questions = await getQuizQuestions(categoryIds)
+      if (questions.length === 0) {
+        alert("No questions found for those categories. Run: bun run db:seed")
+        return
+      }
+      setGameState({
+        ...gameState,
+        status: "playing",
+        selectedCategoryIds: categoryIds,
+        questions,
+      })
+    } catch (e) {
+      alert(e instanceof Error ? e.message : "Could not load questions")
+    } finally {
+      setIsStarting(false)
+    }
   }
 
   const handleCorrectAnswer = () => {
@@ -147,31 +169,18 @@ export default function GameShow() {
         [lifeline]: true,
       },
     }
-
-    if (lifeline === "swapQuestion") {
-      // Generate a new question of similar difficulty
-      const newQuestion = generateSimilarQuestion(gameState.questions);
-
-      const updatedQuestions = [...gameState.questions]
-      updatedQuestions[gameState.currentQuestionIndex] = newQuestion
-
-      setGameState({
-        ...gameState,
-        questions: updatedQuestions,
-        usedLifelines: updatedLifelines,
-      })
-    } else {
-      setGameState({
-        ...gameState,
-        usedLifelines: updatedLifelines,
-      })
-    }
+    
+    setGameState({
+      ...gameState,
+      usedLifelines: updatedLifelines,
+    })
   }
 
   const resetGame = () => {
     setGameState({
       status: "setup",
       teams: [],
+      selectedCategoryIds: [],
       currentTeamIndex: 0,
       currentSection: 0,
       currentQuestionIndex: 0,
@@ -193,6 +202,10 @@ export default function GameShow() {
 
   if (gameState.status === "setup") {
     return <TeamSetup onStartGame={startGame} />
+  }
+
+  if (gameState.status === "category-select") {
+    return <CategorySelect onStartQuiz={startQuiz} isStarting={isStarting} />
   }
 
   if (gameState.status === "finished") {

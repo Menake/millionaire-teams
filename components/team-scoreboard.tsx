@@ -9,6 +9,8 @@ interface TeamScoreboardProps {
 }
 
 export default function TeamScoreboard({ teams, currentTeamIndex, isStealingMode }: TeamScoreboardProps) {
+  console.log(teams);
+  
   return (
     <div className="flex flex-1 gap-4">
       {teams.map((team, index) => {
